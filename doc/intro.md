@@ -8,7 +8,7 @@ POST url that you want to download to `/new`, and server will return something l
 
 * if task is finished, server will return something like
 
-    {"id": 100, "status": "success", "retrieveUrl": "http://serverip/video"}
+    {"id": 100, "status": "succeeded", "retrieveUrl": "http://serverip/retrieve/100"}
 
 * if task is failed, server will return something like
 
@@ -16,4 +16,8 @@ POST url that you want to download to `/new`, and server will return something l
 
 * if task is in progress, server will return something like
 
-    {"id": 100, "status": "in progress", "finished": "20%"}
+    {"id": 100, "status": "downloading", "finished": "20%"}
+
+* if task is pending, server will return something like
+
+    {"id": 100, "status": "pending", "finished": "0%"}
