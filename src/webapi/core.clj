@@ -45,6 +45,11 @@
                                     (assoc body
                                            :finished (str (.progress task) "%"))))
 
+                     (= (.state task) "removed")
+                     (assoc result
+                            :body (generate-string
+                                    body))
+
                      :else
                      {:status 500
                       :body (str "unknow state of task '" (.state task) "'")}
