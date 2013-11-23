@@ -8,7 +8,7 @@ POST url that you want to download to `/new`, and server will return something l
 
 * if task is finished, server will return something like
 
-    {"id": 100, "status": "succeeded", "retrieveUrl": "http://serverip/retrieve/100"}
+    {"id": 100, "status": "succeeded", "retrieveUrl": "http://serverip/retrieve/100.flv"}
 
 * if task is failed, server will return something like
 

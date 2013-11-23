@@ -29,7 +29,7 @@
                                     (assoc body
                                            :retrieveUrl (str serverAddress
                                                              "/retrieve/"
-                                                             (.id task)))))
+                                                             (.retrieveURL task)))))
 
                      (= (.state task) "failed")
                      (assoc result
@@ -68,23 +68,16 @@
              :headers {"Content-Type" "application/json"}
              :body (generate-string {:id id})})))
 
-  (GET "/retrieve/:id" [id]
-       (try
-         (let [int-id (Long/valueOf id)]
-           (try
-             (let [f (FileInputStream.
-                       (str (Config/fileContainer) "/" (Db/retrieve int-id)))]
-               {:status 200
-                :headers {"Content-Type" "video/mp4"}
-                :body f})
-             (catch java.io.FileNotFoundException e
-               {:status 404
-                :header {"Content-Type" "text/html"}
-                :body (str "<h1>" id " is not found in server, maybe you should redownload it</h1>")})))
-         (catch java.lang.NumberFormatException e
-           {:status 400
-            :headers {"Content-Type" "text/html"}
-            :body "<h1>'id' must be digits</h1>"})))
+  (GET "/retrieve/:url" [url]
+        (try
+          (let [f (FileInputStream.
+                    (str (Config/fileContainer) "/" (Db/retrieve url)))]
+            {:status 200
+             :body f})
+          (catch java.io.FileNotFoundException e
+            {:status 404
+             :header {"Content-Type" "text/html"}
+             :body (str "<h1>" url " is not found in server, maybe you should redownload it</h1>")})))
 
   (route/not-found "<h1>Page not found</h1>"))
 
