@@ -5,10 +5,11 @@
   (:require [compojure.route :as route])
   (:require [cheshire.core :refer :all])
   (:import (cloudDownload Utils TaskDispatcher Db Config))
-  (:import (java.io FileInputStream))
+  (:import (java.io FileInputStream File))
   (:gen-class))
 
-(def serverAddress "http://localhost:8080")
+(declare serverAddress)
+(declare serverPort)
 
 (declare taskDispatcher)
 
@@ -28,6 +29,8 @@
                             :body (generate-string
                                     (assoc body
                                            :retrieveUrl (str serverAddress
+                                                             ":"
+                                                             serverPort
                                                              "/retrieve/"
                                                              (.retrieveURL task)))))
 
@@ -88,7 +91,41 @@
 
 (defn -main [& args]
   "Will start the server"
-  (prn "start running under port 8080")
+  (when (.exists (File. "cloudDownload.conf"))
+    (let [{fileContainer :fileContainer
+           initUrl :initUrl
+           dbName :dbName
+           dbUsername :dbUsername
+           dbPassword :dbPassword
+           serverAddress-conf :serverAddress
+           serverPort-conf :serverPort}
+          (read-string (slurp "cloudDownload.conf"))]
+      (when fileContainer
+        (println (str "Using " fileContainer " as fileContainer"))
+        (set! Config/fileContainer fileContainer))
+      (when initUrl
+        (println (str "Using " initUrl " as initUrl"))
+        (set! Config/initUrl initUrl))
+      (when dbName
+        (println (str "Using " dbName " as dbName"))
+        (set! Config/dbName dbName))
+      (when dbUsername
+        (println (str "Using " dbUsername " as dbUsername"))
+        (set! Config/user dbUsername))
+      (when dbPassword
+        (println (str "Using " dbPassword " as dbPassword"))
+        (set! Config/password dbPassword))
+      (if serverAddress-conf
+        (do
+          (println (str "Using " serverAddress-conf " as serverAddress"))
+          (def serverAddress serverAddress-conf))
+        (def serverAddress "http://localhost"))
+      (if serverPort-conf
+        (do
+          (println (str "Using " serverPort-conf " as serverPort"))
+          (def serverPort serverPort-conf))
+        (def serverPort "8080"))))
   (Utils/initSystem)
   (def taskDispatcher (TaskDispatcher. 3))
-  (run-server (wrap-params app) {:port 8080}))
+  (prn (str "start running under port " serverPort))
+  (run-server (wrap-params app) {:port (Integer/valueOf serverPort)}))

@@ -3,7 +3,9 @@
 /checkouts
 pom.xml
 pom.xml.asc
+cloudDownload.conf
 *.jar
+*.tmp
 *.class
 /.lein-*
 /.nrepl-port
